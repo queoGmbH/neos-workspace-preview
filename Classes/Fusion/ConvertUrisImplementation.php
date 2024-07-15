@@ -25,8 +25,11 @@ class ConvertUrisImplementation extends OriginalImplementation
     {
         $currentRenderingMode = $this->interfaceRenderModeService->findModeByCurrentUser();
         $forceConversionPathPart = 'forceConversion';
+        $isPersonalWorkspace = $this->fusionValue('node')->getContext()->getWorkspace()->isPersonalWorkspace();
 
-        if ($currentRenderingMode->isEdit() === false) {
+        //Neos 8 can't differentiate between the content editing view and the frontend preview in internal workspaces, but
+        // the frontend preview uses the baseWorkspace instead of the personalWorkspace, so we use that to check where we are
+        if ($currentRenderingMode->isEdit() === false || ($currentRenderingMode->isEdit() === true && $isPersonalWorkspace === false)) {
             $fullPath = $this->path . '/' . $forceConversionPathPart;
             $this->fusionValueCache[$fullPath] = true;
         }
